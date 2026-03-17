@@ -1,0 +1,864 @@
+/*
+ * AllDayTours Booking Widget — Styles
+ *
+ * All selectors are scoped under .adt-wrap so nothing bleeds into
+ * the parent WordPress theme. The theme override block at the bottom
+ * handles Astra's global button styles specifically.
+ */
+
+/* ─────────────────────────────────────────────
+   Reset
+───────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─────────────────────────────────────────────
+   Design tokens
+───────────────────────────────────────────── */
+:root {
+  --blue:       #1A56DB;
+  --blue-dark:  #1347BF;
+  --blue-light: #EBF2FF;
+  --blue-mid:   #DBEAFE;
+  --green:      #059669;
+  --orange:     #F59E0B;
+
+  --gray-50:  #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-300: #D1D5DB;
+  --gray-400: #9CA3AF;
+  --gray-500: #6B7280;
+  --gray-600: #4B5563;
+  --gray-800: #1F2937;
+  --white:    #FFFFFF;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow:    0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,.12);
+
+  --radius:    10px;
+  --radius-sm: 6px;
+}
+
+/* ─────────────────────────────────────────────
+   Base
+───────────────────────────────────────────── */
+body {
+  font-family: 'Roboto', sans-serif;
+  background: var(--gray-50);
+  color: var(--gray-800);
+  line-height: 1.5;
+}
+
+/* ─────────────────────────────────────────────
+   Wrapper
+───────────────────────────────────────────── */
+.adt-wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 20px 16px 48px;
+}
+
+/* ─────────────────────────────────────────────
+   Trip type tabs
+───────────────────────────────────────────── */
+.adt-type-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.adt-type-tab {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--gray-500);
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .18s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.adt-type-tab:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--white);
+}
+
+.adt-type-tab.active {
+  border-color: var(--blue);
+  background: var(--blue-light);
+  color: var(--blue);
+}
+
+/* ─────────────────────────────────────────────
+   Card
+───────────────────────────────────────────── */
+.adt-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: fadeIn .25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.adt-card-header {
+  background: var(--blue-light);
+  border-bottom: 1px solid var(--blue-mid);
+  padding: 18px 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adt-card-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.adt-card-header p {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 1px;
+}
+
+.adt-card-body {
+  padding: 28px;
+}
+
+/* ─────────────────────────────────────────────
+   Search bar
+   Mimics a flight-search-style labeled row.
+───────────────────────────────────────────── */
+.adt-searchbar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+@media (max-width: 600px) {
+  .adt-searchbar {
+    grid-template-columns: 1fr;
+  }
+  .adt-searchbar .sb-cell {
+    border-right: none !important;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .adt-searchbar .sb-cell:last-child {
+    border-bottom: none;
+  }
+}
+
+.sb-cell {
+  padding: 14px 16px;
+  border-right: 1px solid var(--gray-200);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sb-cell:last-child {
+  border-right: none;
+}
+
+.sb-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+
+.sb-cell select,
+.sb-cell input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-800);
+  width: 100%;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.sb-cell select option {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--gray-800);
+  background: var(--white);
+}
+
+.sb-cell select option:disabled {
+  color: var(--gray-400);
+}
+
+/* ─────────────────────────────────────────────
+   Form sections
+───────────────────────────────────────────── */
+.adt-section-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adt-section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+.adt-divider {
+  height: 1px;
+  background: var(--gray-100);
+  margin: 24px 0;
+}
+
+/* ─────────────────────────────────────────────
+   One-way / Round-trip toggle
+───────────────────────────────────────────── */
+.adt-toggle {
+  display: inline-flex;
+  background: var(--gray-100);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+  margin-bottom: 24px;
+}
+
+.adt-toggle-btn {
+  padding: 9px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.adt-toggle-btn.active {
+  background: var(--white);
+  color: var(--blue);
+  box-shadow: 0 1px 4px rgba(0,0,0,.12);
+}
+
+/* ─────────────────────────────────────────────
+   Fields
+───────────────────────────────────────────── */
+.adt-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.adt-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+@media (max-width: 600px) {
+  .adt-grid-2,
+  .adt-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.adt-field {
+  margin-bottom: 16px;
+}
+
+.adt-field:last-child {
+  margin-bottom: 0;
+}
+
+.adt-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--gray-600);
+  margin-bottom: 6px;
+  letter-spacing: .3px;
+}
+
+.adt-input,
+.adt-select,
+.adt-textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-800);
+  background: var(--white);
+  transition: border-color .15s, box-shadow .15s;
+  outline: none;
+  appearance: none;
+}
+
+.adt-input:focus,
+.adt-select:focus,
+.adt-textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(26,86,219,.1);
+}
+
+.adt-input::placeholder {
+  color: var(--gray-400);
+  font-weight: 500;
+}
+
+.adt-textarea {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.adt-hint {
+  font-size: 11px;
+  color: var(--gray-400);
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────
+   Passenger counter
+───────────────────────────────────────────── */
+.adt-counter {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--white);
+}
+
+.adt-counter-btn {
+  width: 40px;
+  height: 42px;
+  border: none;
+  background: var(--gray-50);
+  color: var(--blue);
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .12s;
+  line-height: 1;
+}
+
+.adt-counter-btn:hover {
+  background: var(--blue-mid);
+}
+
+.adt-counter-val {
+  min-width: 52px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--gray-800);
+  border-left: 1px solid var(--gray-200);
+  border-right: 1px solid var(--gray-200);
+  height: 42px;
+  line-height: 42px;
+}
+
+/* ─────────────────────────────────────────────
+   Tour cards
+───────────────────────────────────────────── */
+.adt-tour-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 560px) {
+  .adt-tour-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.adt-tour-card {
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: all .18s;
+  position: relative;
+  background: var(--white);
+}
+
+.adt-tour-card:hover {
+  border-color: var(--blue);
+  box-shadow: var(--shadow-sm);
+}
+
+.adt-tour-card.selected {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+
+.adt-tour-card.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 20px;
+  text-align: center;
+}
+
+.adt-tour-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: 8px;
+  padding-right: 24px;
+}
+
+.adt-tour-meta {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  line-height: 1.5;
+}
+
+.adt-tour-price {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--blue);
+}
+
+.adt-tour-price span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-400);
+}
+
+/* ─────────────────────────────────────────────
+   Price summary bar
+───────────────────────────────────────────── */
+.adt-price-summary {
+  background: var(--blue-light);
+  border: 1.5px solid var(--blue-mid);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.adt-price-summary-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-600);
+}
+
+.adt-price-summary-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--blue);
+}
+
+/* ─────────────────────────────────────────────
+   Submit button
+───────────────────────────────────────────── */
+.adt-submit {
+  width: 100%;
+  padding: 16px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  cursor: pointer;
+  transition: background .15s, transform .12s, box-shadow .15s;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.adt-submit:hover {
+  background: var(--blue-dark);
+  box-shadow: 0 4px 16px rgba(26,86,219,.35);
+  transform: translateY(-1px);
+}
+
+.adt-submit:active {
+  transform: translateY(0);
+}
+
+.adt-submit:disabled {
+  background: var(--gray-300);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────────────
+   Success screen
+───────────────────────────────────────────── */
+.adt-success {
+  text-align: center;
+  padding: 32px 16px;
+  animation: fadeIn .3s ease;
+}
+
+.adt-success-circle {
+  width: 72px;
+  height: 72px;
+  background: #D1FAE5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 32px;
+}
+
+.adt-success-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: 8px;
+}
+
+.adt-success-text {
+  font-size: 14px;
+  color: var(--gray-500);
+  line-height: 1.7;
+  max-width: 380px;
+  margin: 0 auto 20px;
+  font-weight: 600;
+}
+
+.adt-success-back {
+  display: inline-block;
+  padding: 10px 24px;
+  border: 2px solid var(--blue);
+  border-radius: var(--radius-sm);
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  background: transparent;
+  font-family: 'Roboto', sans-serif;
+  transition: all .15s;
+}
+
+.adt-success-back:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
+/* ─────────────────────────────────────────────
+   Badges
+───────────────────────────────────────────── */
+.adt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+
+.adt-badge-orange {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+/* ─────────────────────────────────────────────
+   Loading spinner
+───────────────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.adt-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+
+/* ─────────────────────────────────────────────
+   Square payment modal
+───────────────────────────────────────────── */
+.adt-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.adt-modal-overlay.open {
+  display: flex;
+}
+
+.adt-modal {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 480px;
+  animation: fadeIn .2s ease;
+  overflow: hidden;
+}
+
+.adt-modal-header {
+  background: var(--blue-light);
+  border-bottom: 1px solid var(--blue-mid);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.adt-modal-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gray-800);
+}
+
+.adt-modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--gray-400);
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background .12s;
+}
+
+.adt-modal-close:hover {
+  background: var(--gray-100);
+  color: var(--gray-800);
+}
+
+.adt-modal-body {
+  padding: 24px;
+}
+
+.adt-order-summary {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--gray-600);
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+.adt-order-summary strong {
+  color: var(--gray-800);
+  font-weight: 700;
+}
+
+.adt-order-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  margin-top: 10px;
+  border-top: 1px solid var(--gray-200);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-800);
+}
+
+.adt-order-total span:last-child {
+  color: var(--blue);
+  font-size: 18px;
+}
+
+.adt-square-note {
+  font-size: 11px;
+  color: var(--gray-400);
+  font-weight: 500;
+  text-align: center;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+.adt-modal-divider {
+  height: 1px;
+  background: var(--gray-200);
+  margin: 16px 0;
+}
+
+/* ─────────────────────────────────────────────
+   Validation states
+───────────────────────────────────────────── */
+.adt-input.invalid,
+.adt-select.invalid,
+.adt-textarea.invalid {
+  border-color: #EF4444 !important;
+  box-shadow: 0 0 0 3px rgba(239,68,68,.1) !important;
+}
+
+.adt-input.valid,
+.adt-select.valid,
+.adt-textarea.valid {
+  border-color: var(--green) !important;
+}
+
+.adt-field-error {
+  color: #EF4444;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 5px;
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+
+.adt-field-error.visible {
+  display: flex;
+}
+
+.sb-cell.invalid input {
+  color: #EF4444;
+}
+
+.sb-cell.invalid .sb-label {
+  color: #EF4444;
+}
+
+.sb-cell.invalid {
+  background: #FEF2F2;
+}
+
+.sb-cell-error {
+  font-size: 10px;
+  font-weight: 700;
+  color: #EF4444;
+  display: none;
+  margin-top: 2px;
+}
+
+.sb-cell-error.visible {
+  display: block;
+}
+
+.adt-tour-error {
+  color: #EF4444;
+  font-size: 12px;
+  font-weight: 700;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+
+.adt-tour-error.visible {
+  display: flex;
+}
+
+/* ─────────────────────────────────────────────
+   Utility
+───────────────────────────────────────────── */
+.hidden {
+  display: none !important;
+}
+
+/* ─────────────────────────────────────────────
+   Theme overrides (Astra)
+   Astra applies global button styles that bleed
+   into .adt-type-tab elements. These rules lock
+   all three tab states so the theme can't touch
+   them regardless of cascade order.
+───────────────────────────────────────────── */
+.adt-wrap .adt-type-tab {
+  background: #ffffff !important;
+  color: #6B7280 !important;
+  border-color: #E5E7EB !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;
+  transform: none !important;
+}
+
+.adt-wrap .adt-type-tab:hover {
+  background: #ffffff !important;
+  color: #1A56DB !important;
+  border-color: #1A56DB !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;
+  transform: none !important;
+}
+
+.adt-wrap .adt-type-tab.active {
+  background: #EBF2FF !important;
+  color: #1A56DB !important;
+  border-color: #1A56DB !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;
+  transform: none !important;
+}

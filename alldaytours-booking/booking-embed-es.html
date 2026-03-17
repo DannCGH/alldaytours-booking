@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AllDayTours — Reserva tu Viaje</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+/*
+ * AllDayTours Booking Widget — Styles
+ *
+ * All selectors are scoped under .adt-wrap so nothing bleeds into
+ * the parent WordPress theme. The theme override block at the bottom
+ * handles Astra's global button styles specifically.
+ */
+
+/* ─────────────────────────────────────────────
+   Reset
+───────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─────────────────────────────────────────────
+   Design tokens
+───────────────────────────────────────────── */
+:root {
+  --blue:       #1A56DB;
+  --blue-dark:  #1347BF;
+  --blue-light: #EBF2FF;
+  --blue-mid:   #DBEAFE;
+  --green:      #059669;
+  --orange:     #F59E0B;
+
+  --gray-50:  #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-300: #D1D5DB;
+  --gray-400: #9CA3AF;
+  --gray-500: #6B7280;
+  --gray-600: #4B5563;
+  --gray-800: #1F2937;
+  --white:    #FFFFFF;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow:    0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,.12);
+
+  --radius:    10px;
+  --radius-sm: 6px;
+}
+
+/* ─────────────────────────────────────────────
+   Base
+───────────────────────────────────────────── */
+body {
+  font-family: 'Roboto', sans-serif;
+  background: var(--gray-50);
+  color: var(--gray-800);
+  line-height: 1.5;
+}
+
+/* ─────────────────────────────────────────────
+   Wrapper
+───────────────────────────────────────────── */
+.adt-wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 20px 16px 48px;
+}
+
+/* ─────────────────────────────────────────────
+   Trip type tabs
+───────────────────────────────────────────── */
+.adt-type-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.adt-type-tab {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--gray-500);
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .18s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.adt-type-tab:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--white);
+}
+
+.adt-type-tab.active {
+  border-color: var(--blue);
+  background: var(--blue-light);
+  color: var(--blue);
+}
+
+/* ─────────────────────────────────────────────
+   Card
+───────────────────────────────────────────── */
+.adt-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: fadeIn .25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.adt-card-header {
+  background: var(--blue-light);
+  border-bottom: 1px solid var(--blue-mid);
+  padding: 18px 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adt-card-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.adt-card-header p {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 1px;
+}
+
+.adt-card-body {
+  padding: 28px;
+}
+
+/* ─────────────────────────────────────────────
+   Search bar
+   Mimics a flight-search-style labeled row.
+───────────────────────────────────────────── */
+.adt-searchbar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+@media (max-width: 600px) {
+  .adt-searchbar {
+    grid-template-columns: 1fr;
+  }
+  .adt-searchbar .sb-cell {
+    border-right: none !important;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .adt-searchbar .sb-cell:last-child {
+    border-bottom: none;
+  }
+}
+
+.sb-cell {
+  padding: 14px 16px;
+  border-right: 1px solid var(--gray-200);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sb-cell:last-child {
+  border-right: none;
+}
+
+.sb-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+
+.sb-cell select,
+.sb-cell input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-800);
+  width: 100%;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.sb-cell select option {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--gray-800);
+  background: var(--white);
+}
+
+.sb-cell select option:disabled {
+  color: var(--gray-400);
+}
+
+/* ─────────────────────────────────────────────
+   Form sections
+───────────────────────────────────────────── */
+.adt-section-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adt-section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+.adt-divider {
+  height: 1px;
+  background: var(--gray-100);
+  margin: 24px 0;
+}
+
+/* ─────────────────────────────────────────────
+   One-way / Round-trip toggle
+───────────────────────────────────────────── */
+.adt-toggle {
+  display: inline-flex;
+  background: var(--gray-100);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+  margin-bottom: 24px;
+}
+
+.adt-toggle-btn {
+  padding: 9px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.adt-toggle-btn.active {
+  background: var(--white);
+  color: var(--blue);
+  box-shadow: 0 1px 4px rgba(0,0,0,.12);
+}
+
+/* ─────────────────────────────────────────────
+   Fields
+───────────────────────────────────────────── */
+.adt-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.adt-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+@media (max-width: 600px) {
+  .adt-grid-2,
+  .adt-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.adt-field {
+  margin-bottom: 16px;
+}
+
+.adt-field:last-child {
+  margin-bottom: 0;
+}
+
+.adt-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--gray-600);
+  margin-bottom: 6px;
+  letter-spacing: .3px;
+}
+
+.adt-input,
+.adt-select,
+.adt-textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-800);
+  background: var(--white);
+  transition: border-color .15s, box-shadow .15s;
+  outline: none;
+  appearance: none;
+}
+
+.adt-input:focus,
+.adt-select:focus,
+.adt-textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(26,86,219,.1);
+}
+
+.adt-input::placeholder {
+  color: var(--gray-400);
+  font-weight: 500;
+}
+
+.adt-textarea {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.adt-hint {
+  font-size: 11px;
+  color: var(--gray-400);
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────
+   Passenger counter
+───────────────────────────────────────────── */
+.adt-counter {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--white);
+}
+
+.adt-counter-btn {
+  width: 40px;
+  height: 42px;
+  border: none;
+  background: var(--gray-50);
+  color: var(--blue);
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .12s;
+  line-height: 1;
+}
+
+.adt-counter-btn:hover {
+  background: var(--blue-mid);
+}
+
+.adt-counter-val {
+  min-width: 52px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--gray-800);
+  border-left: 1px solid var(--gray-200);
+  border-right: 1px solid var(--gray-200);
+  height: 42px;
+  line-height: 42px;
+}
+
+/* ─────────────────────────────────────────────
+   Tour cards
+───────────────────────────────────────────── */
+.adt-tour-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 560px) {
+  .adt-tour-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.adt-tour-card {
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: all .18s;
+  position: relative;
+  background: var(--white);
+}
+
+.adt-tour-card:hover {
+  border-color: var(--blue);
+  box-shadow: var(--shadow-sm);
+}
+
+.adt-tour-card.selected {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+
+.adt-tour-card.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 20px;
+  text-align: center;
+}
+
+.adt-tour-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: 8px;
+  padding-right: 24px;
+}
+
+.adt-tour-meta {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  line-height: 1.5;
+}
+
+.adt-tour-price {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--blue);
+}
+
+.adt-tour-price span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-400);
+}
+
+/* ─────────────────────────────────────────────
+   Price summary bar
+───────────────────────────────────────────── */
+.adt-price-summary {
+  background: var(--blue-light);
+  border: 1.5px solid var(--blue-mid);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.adt-price-summary-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-600);
+}
+
+.adt-price-summary-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--blue);
+}
+
+/* ─────────────────────────────────────────────
+   Submit button
+───────────────────────────────────────────── */
+.adt-submit {
+  width: 100%;
+  padding: 16px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  cursor: pointer;
+  transition: background .15s, transform .12s, box-shadow .15s;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.adt-submit:hover {
+  background: var(--blue-dark);
+  box-shadow: 0 4px 16px rgba(26,86,219,.35);
+  transform: translateY(-1px);
+}
+
+.adt-submit:active {
+  transform: translateY(0);
+}
+
+.adt-submit:disabled {
+  background: var(--gray-300);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────────────
+   Success screen
+───────────────────────────────────────────── */
+.adt-success {
+  text-align: center;
+  padding: 32px 16px;
+  animation: fadeIn .3s ease;
+}
+
+.adt-success-circle {
+  width: 72px;
+  height: 72px;
+  background: #D1FAE5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 32px;
+}
+
+.adt-success-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: 8px;
+}
+
+.adt-success-text {
+  font-size: 14px;
+  color: var(--gray-500);
+  line-height: 1.7;
+  max-width: 380px;
+  margin: 0 auto 20px;
+  font-weight: 600;
+}
+
+.adt-success-back {
+  display: inline-block;
+  padding: 10px 24px;
+  border: 2px solid var(--blue);
+  border-radius: var(--radius-sm);
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  background: transparent;
+  font-family: 'Roboto', sans-serif;
+  transition: all .15s;
+}
+
+.adt-success-back:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
+/* ─────────────────────────────────────────────
+   Badges
+───────────────────────────────────────────── */
+.adt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+
+.adt-badge-orange {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+/* ─────────────────────────────────────────────
+   Loading spinner
+───────────────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.adt-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+
+/* ─────────────────────────────────────────────
+   Square payment modal
+───────────────────────────────────────────── */
+.adt-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.adt-modal-overlay.open {
+  display: flex;
+}
+
+.adt-modal {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 480px;
+  animation: fadeIn .2s ease;
+  overflow: hidden;
+}
+
+.adt-modal-header {
+  background: var(--blue-light);
+  border-bottom: 1px solid var(--blue-mid);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.adt-modal-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gray-800);
+}
+
+.adt-modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--gray-400);
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background .12s;
+}
+
+.adt-modal-close:hover {
+  background: var(--gray-100);
+  color: var(--gray-800);
+}
+
+.adt-modal-body {
+  padding: 24px;
+}
+
+.adt-order-summary {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--gray-600);
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+.adt-order-summary strong {
+  color: var(--gray-800);
+  font-weight: 700;
+}
+
+.adt-order-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  margin-top: 10px;
+  border-top: 1px solid var(--gray-200);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-800);
+}
+
+.adt-order-total span:last-child {
+  color: var(--blue);
+  font-size: 18px;
+}
+
+.adt-square-note {
+  font-size: 11px;
+  color: var(--gray-400);
+  font-weight: 500;
+  text-align: center;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+.adt-modal-divider {
+  height: 1px;
+  background: var(--gray-200);
+  margin: 16px 0;
+}
+
+/* ─────────────────────────────────────────────
+   Validation states
+───────────────────────────────────────────── */
+.adt-input.invalid,
+.adt-select.invalid,
+.adt-textarea.invalid {
+  border-color: #EF4444 !important;
+  box-shadow: 0 0 0 3px rgba(239,68,68,.1) !important;
+}
+
+.adt-input.valid,
+.adt-select.valid,
+.adt-textarea.valid {
+  border-color: var(--green) !important;
+}
+
+.adt-field-error {
+  color: #EF4444;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 5px;
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+
+.adt-field-error.visible {
+  display: flex;
+}
+
+.sb-cell.invalid input {
+  color: #EF4444;
+}
+
+.sb-cell.invalid .sb-label {
+  color: #EF4444;
+}
+
+.sb-cell.invalid {
+  background: #FEF2F2;
+}
+
+.sb-cell-error {
+  font-size: 10px;
+  font-weight: 700;
+  color: #EF4444;
+  display: none;
+  margin-top: 2px;
+}
+
+.sb-cell-error.visible {
+  display: block;
+}
+
+.adt-tour-error {
+  color: #EF4444;
+  font-size: 12px;
+  font-weight: 700;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+
+.adt-tour-error.visible {
+  display: flex;
+}
+
+/* ─────────────────────────────────────────────
+   Utility
+───────────────────────────────────────────── */
+.hidden {
+  display: none !important;
+}
+
+/* ─────────────────────────────────────────────
+   Theme overrides (Astra)
+   Astra applies global button styles that bleed
+   into .adt-type-tab elements. These rules lock
+   all three tab states so the theme can't touch
+   them regardless of cascade order.
+───────────────────────────────────────────── */
+.adt-wrap .adt-type-tab {
+  background: #ffffff !important;
+  color: #6B7280 !important;
+  border-color: #E5E7EB !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;
+  transform: none !important;
+}
+
+.adt-wrap .adt-type-tab:hover {
+  background: #ffffff !important;
+  color: #1A56DB !important;
+  border-color: #1A56DB !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;
+  transform: none !important;
+}
+
+.adt-wrap .adt-type-tab.active {
+  background: #EBF2FF !important;
+  color: #1A56DB !important;
+  border-color: #1A56DB !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;
+  transform: none !important;
+}
+
+  </style>
+</head>
+<body>
+<div class="adt-wrap">
+
+  <!-- Trip type selector -->
+  <div class="adt-type-tabs">
+    <button class="adt-type-tab active" data-type="transfers" onclick="switchType('transfers')">Traslados</button>
+    <button class="adt-type-tab"        data-type="tours"     onclick="switchType('tours')">Tours</button>
+    <button class="adt-type-tab"        data-type="charters"  onclick="switchType('charters')">Charters</button>
+  </div>
+
+  <!-- ─────────────────────────────────────────
+       Transfers
+  ───────────────────────────────────────────── -->
+  <div id="panel-transfers" class="adt-card">
+    <div class="adt-card-header">
+      <div>
+        <h2>Reserva de Traslado</h2>
+        <p>Traslados en autobús de punto a punto, solo ida o ida y vuelta</p>
+      </div>
+    </div>
+    <div class="adt-card-body">
+
+      <div id="transfers-success" class="adt-success hidden">
+        <div class="adt-success-circle">✅</div>
+        <div class="adt-success-title">¡Traslado Reservado!</div>
+        <div class="adt-success-text" id="transfers-success-msg"></div>
+        <button class="adt-success-back" onclick="resetForm('transfers')">← Reservar Otro</button>
+      </div>
+
+      <div id="transfers-form">
+        <div class="adt-toggle">
+          <button class="adt-toggle-btn active" id="tt-oneway"    onclick="setTripType('oneway')">Solo Ida</button>
+          <button class="adt-toggle-btn"        id="tt-roundtrip" onclick="setTripType('roundtrip')">Ida y Vuelta</button>
+        </div>
+
+        <div class="adt-searchbar">
+          <div class="sb-cell" id="sb-t-pickup">
+            <span class="sb-label">Desde</span>
+            <select id="t-pickup" onchange="updateDropoffOptions()"></select>
+            <span class="sb-cell-error" id="err-t-pickup">Required</span>
+          </div>
+          <div class="sb-cell" id="sb-t-dropoff">
+            <span class="sb-label">Hacia</span>
+            <select id="t-dropoff" onchange="updatePickupOptions()"></select>
+            <span class="sb-cell-error" id="err-t-dropoff">Required</span>
+          </div>
+          <div class="sb-cell" id="sb-t-date">
+            <span class="sb-label">Salida</span>
+            <input type="date" id="t-date" />
+            <span class="sb-cell-error" id="err-t-date">Required</span>
+          </div>
+        </div>
+
+        <div class="adt-field">
+          <label class="adt-label">Dirección Exacta de Destino</label>
+          <input type="text" id="t-dropoff-exact" class="adt-input" placeholder="Dirección, unidad, referencia…" />
+          <div class="adt-field-error" id="err-t-dropoff-exact">Por favor ingresa la dirección exacta de destino</div>
+          <div class="adt-hint">Ingresa la dirección exacta de destino para que tu conductor esté preparado.</div>
+        </div>
+
+        <div id="t-return-wrap" class="adt-field hidden">
+          <label class="adt-label">Fecha de Regreso</label>
+          <input type="date" id="t-return" class="adt-input" />
+          <div class="adt-field-error" id="err-t-return">Por favor selecciona una fecha de regreso</div>
+        </div>
+
+        <div class="adt-field">
+          <label class="adt-label">Número de Pasajeros</label>
+          <div class="adt-counter">
+            <button class="adt-counter-btn" onclick="adjustCount('t-pax', -1)">−</button>
+            <div class="adt-counter-val" id="t-pax">1</div>
+            <button class="adt-counter-btn" onclick="adjustCount('t-pax', 1, 55)">+</button>
+          </div>
+          <div class="adt-hint">Máx. 55 por autobús. ¿Necesitas más? Usa la reserva de Charter.</div>
+        </div>
+
+        <div class="adt-divider"></div>
+        <div class="adt-section-label">Datos de Contacto</div>
+
+        <div class="adt-grid-2">
+          <div class="adt-field">
+            <label class="adt-label">Nombre Completo</label>
+            <input type="text" id="t-name" class="adt-input" placeholder="Tu nombre completo" />
+            <div class="adt-field-error" id="err-t-name">Please enter your name</div>
+          </div>
+          <div class="adt-field">
+            <label class="adt-label">Phone Number</label>
+            <input type="tel" id="t-phone" class="adt-input" placeholder="+1 (000) 000-0000" />
+            <div class="adt-field-error" id="err-t-phone">Por favor ingresa un número de teléfono válido (EE.UU. o internacional)</div>
+          </div>
+        </div>
+        <div class="adt-field">
+          <label class="adt-label">Correo Electrónico</label>
+          <input type="email" id="t-email" class="adt-input" placeholder="your@email.com" />
+          <div class="adt-field-error" id="err-t-email">Please enter a valid email address</div>
+        </div>
+
+        <button class="adt-submit" id="t-submit" onclick="submitForm('transfers')">
+          <span>Book Transfer</span> <span>→</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────
+       Tours
+  ───────────────────────────────────────────── -->
+  <div id="panel-tours" class="adt-card hidden">
+    <div class="adt-card-header">
+      <div>
+        <h2>Reserva de Tour</h2>
+        <p>Únete a un tour grupal guiado — elige tu fecha y asientos</p>
+      </div>
+    </div>
+    <div class="adt-card-body">
+
+      <div id="tours-success" class="adt-success hidden">
+        <div class="adt-success-circle">✅</div>
+        <div class="adt-success-title">¡Tour Reservado!</div>
+        <div class="adt-success-text" id="tours-success-msg"></div>
+        <button class="adt-success-back" onclick="resetForm('tours')">← Reservar Otro</button>
+      </div>
+
+      <div id="tours-form">
+        <div class="adt-section-label">Elige un Tour</div>
+
+        <div class="adt-tour-error" id="err-tour-select">Por favor selecciona un tour para continuar</div>
+        <div class="adt-tour-grid" id="tour-cards">
+          <!-- populated by renderTourCards() -->
+        </div>
+
+        <!-- shown once a tour is selected -->
+        <div id="tour-details" class="hidden">
+
+          <div class="adt-searchbar" style="grid-template-columns:1fr 1fr 1fr; margin-bottom:0;">
+            <div class="sb-cell" id="sb-tour-pickup">
+              <span class="sb-label">Punto de Recogida</span>
+              <select id="tour-pickup" onchange="updateTourPickupTime()"></select>
+              <span class="sb-cell-error" id="err-tour-pickup">Required</span>
+            </div>
+            <div class="sb-cell" id="sb-tour-date">
+              <span class="sb-label">Fecha de Viaje</span>
+              <input type="date" id="tour-date" />
+              <span class="sb-cell-error" id="err-tour-date">Required</span>
+            </div>
+            <div class="sb-cell" style="flex-direction:row;align-items:center;justify-content:space-between">
+              <div>
+                <div class="sb-label">Passengers</div>
+                <div class="adt-counter" style="margin-top:2px">
+                  <button class="adt-counter-btn" style="height:34px" onclick="adjustCount('tour-pax', -1)">−</button>
+                  <div class="adt-counter-val" id="tour-pax" style="height:34px;line-height:34px;min-width:44px">1</div>
+                  <button class="adt-counter-btn" style="height:34px" onclick="adjustCount('tour-pax', 1, 55)">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- pickup time / drop-off / availability info bar -->
+          <div id="tour-info-bar" style="background:var(--gray-50);border:1px solid var(--gray-200);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:12px 18px;font-size:13px;color:var(--gray-500);font-weight:600;display:flex;gap:24px;flex-wrap:wrap;margin-bottom:20px;">
+            <span id="tour-info-pickup-time"></span>
+            <span id="tour-info-dropoff"></span>
+            <span id="tour-info-avail"></span>
+          </div>
+
+          <div id="tour-price-summary" class="adt-price-summary hidden">
+            <div class="adt-price-summary-label" id="tour-price-label">Estimated Total</div>
+            <div class="adt-price-summary-value" id="tour-price-val">$0.00</div>
+          </div>
+
+          <div class="adt-divider"></div>
+          <div class="adt-section-label">Tus Datos</div>
+
+          <div class="adt-grid-2">
+            <div class="adt-field">
+              <label class="adt-label">Nombre Completo</label>
+              <input type="text" id="tour-name" class="adt-input" placeholder="Your full name" />
+              <div class="adt-field-error" id="err-tour-name">Please enter your name</div>
+            </div>
+            <div class="adt-field">
+              <label class="adt-label">Email Address</label>
+              <input type="email" id="tour-email" class="adt-input" placeholder="your@email.com" />
+              <div class="adt-field-error" id="err-tour-email">Please enter a valid email address</div>
+            </div>
+          </div>
+
+          <button class="adt-submit" id="tour-submit" onclick="submitForm('tours')">
+            <span>Reserve Tour</span> <span>→</span>
+          </button>
+
+        </div><!-- /tour-details -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────
+       Charters
+  ───────────────────────────────────────────── -->
+  <div id="panel-charters" class="adt-card hidden">
+    <div class="adt-card-header">
+      <div>
+        <h2>Solicitud de Charter</h2>
+        <p>Viajes para grupos grandes — recibe una cotización personalizada en 24 horas</p>
+      </div>
+    </div>
+    <div class="adt-card-body">
+
+      <div id="charters-success" class="adt-success hidden">
+        <div class="adt-success-circle">✅</div>
+        <div class="adt-success-title">¡Solicitud Recibida!</div>
+        <div class="adt-success-text" id="charters-success-msg"></div>
+        <button class="adt-success-back" onclick="resetForm('charters')">← Enviar Otra</button>
+      </div>
+
+      <div id="charters-form">
+        <div class="adt-toggle" style="margin-bottom:20px">
+          <button class="adt-toggle-btn active" id="ct-oneway"    onclick="setCharterType('oneway')">Solo Ida</button>
+          <button class="adt-toggle-btn"        id="ct-roundtrip" onclick="setCharterType('roundtrip')">Ida y Vuelta</button>
+          <button class="adt-toggle-btn"        id="ct-multistop" onclick="setCharterType('multistop')">Múltiples Paradas</button>
+        </div>
+
+        <div class="adt-section-label">Detalles del Grupo y Viaje</div>
+
+        <div class="adt-grid-2">
+          <div class="adt-field" style="grid-column:1/-1">
+            <label class="adt-label">Nombre de la Organización / Grupo</label>
+            <input type="text" id="c-org" class="adt-input" placeholder="Empresa, escuela, club…" />
+            <div class="adt-field-error" id="err-c-org">Por favor ingresa el nombre de tu organización</div>
+          </div>
+          <div class="adt-field">
+            <label class="adt-label">Total de Pasajeros</label>
+            <input type="number" id="c-pax" class="adt-input" min="1" placeholder="e.g. 120" />
+            <div class="adt-field-error" id="err-c-pax">Por favor ingresa el número de pasajeros</div>
+          </div>
+          <div class="adt-field">
+            <label class="adt-label">Autobuses Necesarios</label>
+            <input type="number" id="c-buses" class="adt-input" min="1" placeholder="e.g. 3" />
+            <div class="adt-field-error" id="err-c-buses">Por favor ingresa el número de autobuses necesarios</div>
+          </div>
+        </div>
+
+        <div class="adt-searchbar" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:16px">
+          <div class="sb-cell" id="sb-c-pickup">
+            <span class="sb-label">Desde</span>
+            <input type="text" id="c-pickup" placeholder="Lugar de recogida…" />
+            <span class="sb-cell-error" id="err-c-pickup">Required</span>
+          </div>
+          <div class="sb-cell" id="sb-c-dropoff">
+            <span class="sb-label">Hacia</span>
+            <input type="text" id="c-dropoff" placeholder="Destino…" />
+            <span class="sb-cell-error" id="err-c-dropoff">Required</span>
+          </div>
+          <div class="sb-cell" id="sb-c-date">
+            <span class="sb-label">Fecha de Salida</span>
+            <input type="date" id="c-date" />
+            <span class="sb-cell-error" id="err-c-date">Required</span>
+          </div>
+        </div>
+
+        <div class="adt-field">
+          <label class="adt-label">Dirección Exacta de Destino</label>
+          <input type="text" id="c-dropoff-exact" class="adt-input" placeholder="Street address, unit, landmark…" />
+          <div class="adt-field-error" id="err-c-dropoff-exact">Por favor ingresa la dirección exacta de destino</div>
+          <div class="adt-hint">Ingresa la dirección exacta de destino para tu grupo.</div>
+        </div>
+
+        <div id="c-return-wrap" class="adt-field hidden">
+          <label class="adt-label">Fecha de Regreso / Fin</label>
+          <input type="date" id="c-return" class="adt-input" />
+          <div class="adt-field-error" id="err-c-return">Por favor selecciona una fecha de regreso o fin</div>
+        </div>
+
+        <div class="adt-field">
+          <label class="adt-label">Notas o Requisitos Adicionales</label>
+          <textarea id="c-notes" class="adt-input adt-textarea" placeholder="Necesidades de accesibilidad, horarios de salida preferidos, paradas, acomodaciones especiales…"></textarea>
+          <div class="adt-field-error" id="err-c-notes">Por favor proporciona notas o requisitos relevantes</div>
+        </div>
+
+        <div class="adt-divider"></div>
+        <div class="adt-section-label">Contacto Principal</div>
+
+        <div class="adt-grid-3">
+          <div class="adt-field">
+            <label class="adt-label">Nombre del Contacto</label>
+            <input type="text" id="c-name" class="adt-input" placeholder="Persona de contacto" />
+            <div class="adt-field-error" id="err-c-name">Por favor ingresa el nombre del contacto</div>
+          </div>
+          <div class="adt-field">
+            <label class="adt-label">Correo Electrónico</label>
+            <input type="email" id="c-email" class="adt-input" placeholder="your@email.com" />
+            <div class="adt-field-error" id="err-c-email">Please enter a valid email address</div>
+          </div>
+          <div class="adt-field">
+            <label class="adt-label">Teléfono</label>
+            <input type="tel" id="c-phone" class="adt-input" placeholder="+1 (000) 000-0000" />
+            <div class="adt-field-error" id="err-c-phone">Por favor ingresa un número de teléfono válido (EE.UU. o internacional)</div>
+          </div>
+        </div>
+
+        <div class="adt-badge adt-badge-orange" style="margin-bottom:16px;font-size:12px">
+          Nuestro equipo responderá con una cotización personalizada en 24 horas
+        </div>
+
+        <button class="adt-submit" id="c-submit" onclick="submitForm('charters')">
+          <span>Submit Charter Request</span> <span>→</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────
+       Square payment modal
+  ───────────────────────────────────────────── -->
+  <div class="adt-modal-overlay" id="payment-modal">
+    <div class="adt-modal">
+      <div class="adt-modal-header">
+        <h3>Revisar y Pagar</h3>
+        <button class="adt-modal-close" onclick="closePaymentModal()">✕</button>
+      </div>
+      <div class="adt-modal-body">
+        <div class="adt-order-summary" id="modal-order-summary"></div>
+        <div class="adt-modal-divider"></div>
+        <p style="font-size:13px;color:var(--gray-600);font-weight:500;margin-bottom:16px;line-height:1.6;">
+          Los detalles de tu reserva han sido guardados. Haz clic abajo para completar tu pago de forma
+          segura a través de Square. Serás redirigido a la página de pago de Square y regresarás al terminar.
+        </p>
+        <button class="adt-submit" id="modal-pay-btn" onclick="processPayment()">
+          <span>Continue to Payment</span> <span>→</span>
+        </button>
+        <div class="adt-square-note">
+          Pagos procesados de forma segura por Square. Serás redirigido a Square para completar la compra.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /adt-wrap -->
+
+<script>
+/**
+ * AllDayTours Booking Widget
+ *
+ * Three booking flows:
+ *   Transfers  — point-to-point, one-way or round trip, paid via Square
+ *   Tours      — scheduled group tours, paid via Square
+ *   Charters   — large group quote requests, no upfront payment
+ *
+ * On submit, booking details are posted to Formspree before the Square
+ * redirect fires. That way the submission is captured even if a customer
+ * abandons the checkout page.
+ */
+
+// ─────────────────────────────────────────────
+// Configuration — fill these in before deploying
+// ─────────────────────────────────────────────
+
+const FORMSPREE = {
+  transfers: 'https://formspree.io/f/YOUR_TRANSFERS_FORM_ID',
+  tours:     'https://formspree.io/f/YOUR_TOURS_FORM_ID',
+  charters:  'https://formspree.io/f/YOUR_CHARTERS_FORM_ID',
+};
+
+// Create links at https://squareup.com/dashboard/payment-links/new
+const SQUARE_LINKS = {
+  transfers: 'https://square.link/u/YOUR_TRANSFERS_LINK',
+  tours: {
+    1: 'https://square.link/u/YOUR_DOLPHIN_MALL_LINK',
+    2: 'https://square.link/u/YOUR_KEY_WEST_LINK',
+  },
+};
+
+// ─────────────────────────────────────────────
+// Tour definitions
+// ─────────────────────────────────────────────
+
+const TOURS = [
+  {
+    id: 1,
+    name: 'Dolphin Mall Shopping Tour',
+    dropoff: 'Dolphin Mall - 11401 NW 12st Miami',
+    pickups: [
+      { label: 'Collins Av & 5 St - South Beach',            time: '09:00' },
+      { label: 'Bayside - Miami Downtown',                    time: '09:30' },
+      { label: 'MIA International Airport - Terminal E & H',  time: '10:00' },
+    ],
+    availableDays: 'any',  // 'any' | 'weekend' (fri/sat/sun)
+    price: 0,              // set before deploying, e.g. 25.00
+  },
+  {
+    id: 2,
+    name: 'Key West Full Day',
+    dropoff: '908 Carolina Street Key West',
+    pickups: [
+      { label: 'Collins Av & 75 St',                         time: '06:00' },
+      { label: 'Hilton Cabana Collins Av & 63 St',           time: '06:15' },
+      { label: 'Hampton Inn Collins Av & 41 St',             time: '06:30' },
+      { label: 'The Gate Hotel Collins Av & 23 St',          time: '06:45' },
+      { label: 'Loews Miami Beach Collins Av & 16 St',       time: '07:00' },
+      { label: 'Collins Av & 5 St - South Beach',            time: '07:15' },
+      { label: 'Regency Hotel 1000NW Le June RD & 42 Av',    time: '07:45' },
+      { label: 'Holiday Inn Miami Downtown',                  time: null   },
+    ],
+    availableDays: 'weekend',
+    price: 0,  // set before deploying, e.g. 38.99
+  },
+];
+
+// Per-person rate for transfers. Round trips are charged at 2×.
+const TRANSFER_PRICE_PER_PERSON = 0; // set before deploying, e.g. 50
+
+// ─────────────────────────────────────────────
+// Transfer pickup/dropoff locations
+// ─────────────────────────────────────────────
+
+const LOCATIONS = [
+  'Aventura Hotels / Aventura Mall - Aventura',
+  'Bal Harbour - Miami',
+  'Brickell Miami Downtown - Miami',
+  'Brightline Train Station Miami Downtown - Miami',
+  'Busch Gardens Tampa - Tampa',
+  'Chase Stadium Inter Miami Fort Lauderdale - Fort Lauderdale',
+  'Coconut Grove / Coral Gables - Miami',
+  'Dolphin Mall or Area Hotels - Miami',
+  'Doral - Doral',
+  'Fort Lauderdale - Fort Lauderdale',
+  'Fort Lauderdale Airport - Fort Lauderdale (FLL)',
+  'Freedom Park Inter Miami Stadium (Miami Airport Area) - Miami',
+  'Hallandale Beach or Hollywood Beach - Miami',
+  'Miami Beach (40th to 96st) - Miami',
+  'Miami Downtown - Miami',
+  'Miami International Airport - Miami (MIA)',
+  'Miami South Beach (5st to 40st) - Miami',
+  'Miami To - Miami',
+  'Miami to Orlando - Regular Service - Departure 08:00am from MIA Airport - Miami (MIA)',
+  'Orlando - Orlando',
+  'Orlando - Celebration - Celebration',
+  'Orlando - Downtown (Amway Center-Winter Gardens and others) - Orlando',
+  'Orlando - International Drive Hotels - Orlando',
+  'Orlando - Kissimmee - Kissimmee',
+  'Orlando - Lake Buena Vista - Orlando',
+  'Orlando - MCO International Airport / Brightline Terminal C - Orlando (MCO)',
+  'Orlando - SeaWorld - Aquatica - Discovery Cove Parks - Orlando',
+  'Orlando - Transfer Hotel/Hotel - Orlando',
+  'Orlando - Transfer Hotel/Premium Outlets Vinelad or Int. Drive/Hotel - Orlando',
+  'Orlando - Transfer Hotel/Theme Park/Hotel - Orlando',
+  'Orlando - Universal Orlando Resort - Orlando',
+  'Orlando - Walt Disney World Resort - Orlando',
+  'Port Canaveral - Orlando',
+  'Port Everglades - Fort Lauderdale',
+  'Port Miami - Miami',
+  'Sawgrass Mills - Fort Lauderdale',
+  'Seminole Hard Rock Hotel & Casino - Fort Lauderdale',
+  'Sunny Isles - Sunny Isles',
+  'Tallahassee - Tallahassee',
+  'West Palm Beach - West Palm Beach',
+];
+
+// ─────────────────────────────────────────────
+// State
+// ─────────────────────────────────────────────
+
+let tripType     = 'oneway';
+let charterType  = 'oneway';
+let selectedTour = null;
+let pendingType  = null;
+let pendingData  = null;
+let pendingAmount = 0;
+
+// ─────────────────────────────────────────────
+// Tab switching
+// ─────────────────────────────────────────────
+
+function switchType(type) {
+  ['transfers', 'tours', 'charters'].forEach(t => {
+    document.getElementById('panel-' + t).classList.toggle('hidden', t !== type);
+    document.querySelector('[data-type="' + t + '"]').classList.toggle('active', t === type);
+  });
+  if (type === 'tours') renderTourCards();
+}
+
+// ─────────────────────────────────────────────
+// Transfers
+// ─────────────────────────────────────────────
+
+function setTripType(type) {
+  tripType = type;
+  document.getElementById('tt-oneway').classList.toggle('active', type === 'oneway');
+  document.getElementById('tt-roundtrip').classList.toggle('active', type === 'roundtrip');
+  document.getElementById('t-return-wrap').classList.toggle('hidden', type !== 'roundtrip');
+}
+
+function buildOptions(selectId, excludeValue) {
+  const el = document.getElementById(selectId);
+  const current = el.value;
+  el.innerHTML = '<option value="" disabled selected>Select a location…</option>';
+  LOCATIONS.forEach(loc => {
+    if (loc === excludeValue) return;
+    const opt = document.createElement('option');
+    opt.value = loc;
+    opt.textContent = loc;
+    if (loc === current) opt.selected = true;
+    el.appendChild(opt);
+  });
+}
+
+// Keep From and To mutually exclusive
+function updateDropoffOptions() {
+  const pickup = document.getElementById('t-pickup').value;
+  buildOptions('t-dropoff', pickup);
+  if (document.getElementById('t-dropoff').value === pickup) {
+    document.getElementById('t-dropoff').value = '';
+  }
+}
+
+function updatePickupOptions() {
+  const dropoff = document.getElementById('t-dropoff').value;
+  buildOptions('t-pickup', dropoff);
+  if (document.getElementById('t-pickup').value === dropoff) {
+    document.getElementById('t-pickup').value = '';
+  }
+}
+
+function initLocationDropdowns() {
+  buildOptions('t-pickup', '');
+  buildOptions('t-dropoff', '');
+}
+
+// ─────────────────────────────────────────────
+// Charters
+// ─────────────────────────────────────────────
+
+function setCharterType(type) {
+  charterType = type;
+  ['oneway', 'roundtrip', 'multistop'].forEach(t => {
+    document.getElementById('ct-' + t).classList.toggle('active', t === type);
+  });
+  document.getElementById('c-return-wrap').classList.toggle('hidden', type === 'oneway');
+}
+
+// ─────────────────────────────────────────────
+// Passenger counter (shared across all tabs)
+// ─────────────────────────────────────────────
+
+function adjustCount(id, delta, max) {
+  const el = document.getElementById(id);
+  let val = parseInt(el.textContent) + delta;
+  if (val < 1) val = 1;
+  if (max && val > max) val = max;
+  el.textContent = val;
+  updateTourPrice();
+}
+
+// ─────────────────────────────────────────────
+// Tours
+// ─────────────────────────────────────────────
+
+function renderTourCards() {
+  const grid = document.getElementById('tour-cards');
+  grid.innerHTML = TOURS.map(t => `
+    <div class="adt-tour-card" id="tc-${t.id}" onclick="selectTour(${t.id})">
+      <div class="adt-tour-name">${t.name}</div>
+      <div class="adt-tour-meta">
+        <span>📍 Drop-off: ${t.dropoff}</span>
+        <span>🕐 ${t.pickups.length} pickup point${t.pickups.length > 1 ? 's' : ''}</span>
+        <span>⏱ ${t.availableDays === 'weekend' ? 'Vie / Sáb / Dom únicamente' : 'Cualquier día'}</span>
+      </div>
+      ${t.price > 0 ? `<div class="adt-tour-price">$${t.price.toFixed(2)} <span>/ person</span></div>` : ''}
+    </div>
+  `).join('');
+}
+
+function selectTour(id) {
+  selectedTour = id;
+  document.querySelectorAll('.adt-tour-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('tc-' + id).classList.add('selected');
+  document.getElementById('err-tour-select').classList.remove('visible');
+
+  const tour = TOURS.find(t => t.id === id);
+
+  // Populate pickup dropdown for the selected tour
+  const pickupSel = document.getElementById('tour-pickup');
+  pickupSel.innerHTML = '<option value="" disabled selected>Select a pickup point…</option>';
+  tour.pickups.forEach((p, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = p.time ? `${p.label} (${p.time})` : p.label;
+    pickupSel.appendChild(opt);
+  });
+  pickupSel.value = '';
+
+  // Minimum bookable date: day after tomorrow
+  const dateInput = document.getElementById('tour-date');
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() + 2);
+  dateInput.min = minDate.toISOString().split('T')[0];
+  dateInput.value = '';
+
+  document.getElementById('tour-info-dropoff').textContent = 'Destino: ' + tour.dropoff;
+  document.getElementById('tour-info-avail').textContent   = tour.availableDays === 'weekend'
+    ? 'Disponible: Vie, Sáb y Dom únicamente'
+    : 'Disponible: Cualquier día';
+  document.getElementById('tour-info-pickup-time').textContent = '';
+
+  document.getElementById('tour-details').classList.remove('hidden');
+  updateTourPrice();
+}
+
+function updateTourPickupTime() {
+  const tour = TOURS.find(t => t.id === selectedTour);
+  if (!tour) return;
+  const idx = parseInt(document.getElementById('tour-pickup').value);
+  if (isNaN(idx)) return;
+  const pickup = tour.pickups[idx];
+  document.getElementById('tour-info-pickup-time').textContent =
+    pickup.time ? 'Hora de recogida: ' + pickup.time : '';
+  document.getElementById('sb-tour-pickup').classList.remove('invalid');
+  document.getElementById('err-tour-pickup').classList.remove('visible');
+}
+
+function isDateAvailable(dateStr, availableDays) {
+  // Use noon to sidestep DST edge cases flipping the date
+  const day = new Date(dateStr + 'T12:00:00').getDay(); // 0 = Sun, 6 = Sat
+  if (availableDays === 'weekend') return day === 0 || day === 5 || day === 6;
+  return true;
+}
+
+function updateTourPrice() {
+  const summary = document.getElementById('tour-price-summary');
+  if (!selectedTour) { summary.classList.add('hidden'); return; }
+  const tour = TOURS.find(t => t.id === selectedTour);
+  if (!tour || tour.price === 0) { summary.classList.add('hidden'); return; }
+  const pax   = parseInt(document.getElementById('tour-pax').textContent);
+  const total = tour.price * pax;
+  document.getElementById('tour-price-val').textContent = '$' + total.toFixed(2);
+  document.getElementById('tour-price-label').textContent =
+    `${tour.name} × ${pax} passenger${pax > 1 ? 's' : ''}`;
+  summary.classList.remove('hidden');
+}
+
+// ─────────────────────────────────────────────
+// Validation
+// ─────────────────────────────────────────────
+
+function isValidEmail(v) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+}
+
+function isValidPhone(v) {
+  const digits = v.replace(/[\s\-().+]/g, '');
+
+  // Block obvious fakes
+  if (/^(\d)\1{6,}$/.test(digits)) return false;
+  if (/^(1234567|12345678|123456789|1234567890|0987654321)/.test(digits)) return false;
+
+  // NANP — area code and exchange must start 2–9
+  if (digits.length === 10) return /^[2-9]\d{2}[2-9]\d{6}$/.test(digits);
+
+  // +1 prefix variant
+  if (digits.length === 11 && digits[0] === '1') return /^1[2-9]\d{2}[2-9]\d{6}$/.test(digits);
+
+  // International fallback
+  if (digits.length >= 7 && digits.length <= 15) return /^\d+$/.test(digits);
+
+  return false;
+}
+
+function setFieldState(inputId, errId, valid, isSbCell) {
+  const input = document.getElementById(inputId);
+  const err   = document.getElementById(errId);
+  if (!input || !err) return;
+  if (isSbCell) {
+    const cell = input.closest('.sb-cell');
+    if (cell) cell.classList.toggle('invalid', !valid);
+    err.classList.toggle('visible', !valid);
+  } else {
+    input.classList.toggle('invalid', !valid);
+    input.classList.toggle('valid', valid);
+    err.classList.toggle('visible', !valid);
+  }
+  return valid;
+}
+
+// Clears error state as soon as the user corrects a field they've
+// already been shown an error for — no waiting until next submit.
+function attachLiveValidation() {
+  const rules = [
+    { id: 't-pickup',        err: 'err-t-pickup',        check: v => v.trim().length > 0,  sb: true  },
+    { id: 't-dropoff',       err: 'err-t-dropoff',       check: v => v.trim().length > 0,  sb: true  },
+    { id: 't-date',          err: 'err-t-date',          check: v => v.length > 0,         sb: true  },
+    { id: 't-dropoff-exact', err: 'err-t-dropoff-exact', check: v => v.trim().length > 0,  sb: false },
+    { id: 't-return',        err: 'err-t-return',        check: v => v.length > 0,         sb: false },
+    { id: 't-name',          err: 'err-t-name',          check: v => v.trim().length > 1,  sb: false },
+    { id: 't-email',         err: 'err-t-email',         check: v => isValidEmail(v),      sb: false },
+    { id: 't-phone',         err: 'err-t-phone',         check: v => isValidPhone(v),      sb: false },
+    { id: 'tour-pickup',     err: 'err-tour-pickup',     check: v => v !== '',             sb: true  },
+    { id: 'tour-date',       err: 'err-tour-date',       check: v => v.length > 0,         sb: true  },
+    { id: 'tour-name',       err: 'err-tour-name',       check: v => v.trim().length > 1,  sb: false },
+    { id: 'tour-email',      err: 'err-tour-email',      check: v => isValidEmail(v),      sb: false },
+    { id: 'c-org',           err: 'err-c-org',           check: v => v.trim().length > 1,  sb: false },
+    { id: 'c-pax',           err: 'err-c-pax',           check: v => parseInt(v) > 0,      sb: false },
+    { id: 'c-buses',         err: 'err-c-buses',         check: v => parseInt(v) > 0,      sb: false },
+    { id: 'c-pickup',        err: 'err-c-pickup',        check: v => v.trim().length > 0,  sb: true  },
+    { id: 'c-dropoff',       err: 'err-c-dropoff',       check: v => v.trim().length > 0,  sb: true  },
+    { id: 'c-date',          err: 'err-c-date',          check: v => v.length > 0,         sb: true  },
+    { id: 'c-dropoff-exact', err: 'err-c-dropoff-exact', check: v => v.trim().length > 0,  sb: false },
+    { id: 'c-return',        err: 'err-c-return',        check: v => v.length > 0,         sb: false },
+    { id: 'c-name',          err: 'err-c-name',          check: v => v.trim().length > 1,  sb: false },
+    { id: 'c-email',         err: 'err-c-email',         check: v => isValidEmail(v),      sb: false },
+    { id: 'c-notes',         err: 'err-c-notes',         check: v => v.trim().length > 0,  sb: false },
+    { id: 'c-phone',         err: 'err-c-phone',         check: v => isValidPhone(v),      sb: false },
+  ];
+
+  rules.forEach(({ id, err, check, sb }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      const isMarked = el.classList.contains('invalid') ||
+        (sb && el.closest('.sb-cell')?.classList.contains('invalid'));
+      if (isMarked && check(el.value)) setFieldState(id, err, true, sb);
+    });
+    el.addEventListener('blur', () => {
+      if (el.value !== '') setFieldState(id, err, check(el.value), sb);
+    });
+  });
+}
+
+function validateTransfers() {
+  let ok = true;
+  const v = (id, err, check, sb) => { if (!setFieldState(id, err, check, sb)) ok = false; };
+
+  v('t-pickup',        'err-t-pickup',        document.getElementById('t-pickup').value.trim().length > 0,        true);
+  v('t-dropoff',       'err-t-dropoff',       document.getElementById('t-dropoff').value.trim().length > 0,       true);
+  v('t-date',          'err-t-date',          document.getElementById('t-date').value.length > 0,                 true);
+  v('t-dropoff-exact', 'err-t-dropoff-exact', document.getElementById('t-dropoff-exact').value.trim().length > 0, false);
+
+  if (tripType === 'roundtrip') {
+    v('t-return', 'err-t-return', document.getElementById('t-return').value.length > 0, false);
+  }
+
+  v('t-name',  'err-t-name',  document.getElementById('t-name').value.trim().length > 1, false);
+  v('t-email', 'err-t-email', isValidEmail(document.getElementById('t-email').value),    false);
+  v('t-phone', 'err-t-phone', isValidPhone(document.getElementById('t-phone').value),    false);
+
+  if (!ok) {
+    document.querySelector('#transfers-form .invalid, #transfers-form .sb-cell.invalid')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  return ok;
+}
+
+function validateTours() {
+  let ok = true;
+  const v = (id, err, check, sb) => { if (!setFieldState(id, err, check, sb)) ok = false; };
+
+  const tourErr = document.getElementById('err-tour-select');
+  if (!selectedTour) {
+    tourErr.classList.add('visible');
+    ok = false;
+  } else {
+    tourErr.classList.remove('visible');
+  }
+
+  if (selectedTour) {
+    const pickupVal  = document.getElementById('tour-pickup').value;
+    const pickupCell = document.getElementById('sb-tour-pickup');
+    const pickupErr  = document.getElementById('err-tour-pickup');
+
+    if (!pickupVal) {
+      pickupCell.classList.add('invalid');
+      pickupErr.classList.add('visible');
+      ok = false;
+    } else {
+      pickupCell.classList.remove('invalid');
+      pickupErr.classList.remove('visible');
+    }
+
+    const dateVal  = document.getElementById('tour-date').value;
+    const tour     = TOURS.find(t => t.id === selectedTour);
+    const dateCell = document.getElementById('sb-tour-date');
+    const dateErr  = document.getElementById('err-tour-date');
+
+    if (!dateVal) {
+      dateCell.classList.add('invalid');
+      dateErr.textContent = 'Required';
+      dateErr.classList.add('visible');
+      ok = false;
+    } else if (!isDateAvailable(dateVal, tour.availableDays)) {
+      dateCell.classList.add('invalid');
+      dateErr.textContent = tour.availableDays === 'weekend'
+        ? 'Este tour opera Vie, Sáb y Dom únicamente'
+        : 'Fecha no disponible';
+      dateErr.classList.add('visible');
+      ok = false;
+    } else {
+      dateCell.classList.remove('invalid');
+      dateErr.classList.remove('visible');
+    }
+  }
+
+  v('tour-name',  'err-tour-name',  document.getElementById('tour-name').value.trim().length > 1, false);
+  v('tour-email', 'err-tour-email', isValidEmail(document.getElementById('tour-email').value),    false);
+
+  if (!ok) {
+    document.querySelector('#tours-form .invalid, #tours-form .sb-cell.invalid, #err-tour-select.visible')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  return ok;
+}
+
+function validateCharters() {
+  let ok = true;
+  const v = (id, err, check, sb) => { if (!setFieldState(id, err, check, sb)) ok = false; };
+
+  v('c-org',           'err-c-org',           document.getElementById('c-org').value.trim().length > 1,           false);
+  v('c-pax',           'err-c-pax',           parseInt(document.getElementById('c-pax').value) > 0,               false);
+  v('c-buses',         'err-c-buses',         parseInt(document.getElementById('c-buses').value) > 0,             false);
+  v('c-pickup',        'err-c-pickup',        document.getElementById('c-pickup').value.trim().length > 0,        true);
+  v('c-dropoff',       'err-c-dropoff',       document.getElementById('c-dropoff').value.trim().length > 0,       true);
+  v('c-date',          'err-c-date',          document.getElementById('c-date').value.length > 0,                 true);
+  v('c-dropoff-exact', 'err-c-dropoff-exact', document.getElementById('c-dropoff-exact').value.trim().length > 0, false);
+
+  if (charterType !== 'oneway') {
+    v('c-return', 'err-c-return', document.getElementById('c-return').value.length > 0, false);
+  }
+
+  v('c-name',  'err-c-name',  document.getElementById('c-name').value.trim().length > 1,  false);
+  v('c-email', 'err-c-email', isValidEmail(document.getElementById('c-email').value),     false);
+  v('c-notes', 'err-c-notes', document.getElementById('c-notes').value.trim().length > 0, false);
+  v('c-phone', 'err-c-phone', isValidPhone(document.getElementById('c-phone').value),     false);
+
+  if (!ok) {
+    document.querySelector('#charters-form .invalid, #charters-form .sb-cell.invalid')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  return ok;
+}
+
+// ─────────────────────────────────────────────
+// Data collection
+// Builds the Formspree payload and the order
+// summary shown in the payment modal.
+// ─────────────────────────────────────────────
+
+function collectData(type) {
+  if (type === 'transfers') {
+    const pax   = parseInt(document.getElementById('t-pax').textContent);
+    const total = pax * TRANSFER_PRICE_PER_PERSON * (tripType === 'roundtrip' ? 2 : 1);
+    return {
+      data: {
+        'Trip Type':              tripType === 'oneway' ? 'Solo Ida' : 'Ida y Vuelta',
+        'Pickup':                 document.getElementById('t-pickup').value,
+        'Dropoff (General)':      document.getElementById('t-dropoff').value,
+        'Exact Drop-off Address': document.getElementById('t-dropoff-exact').value,
+        'Departure Date':         document.getElementById('t-date').value,
+        'Return Date':            tripType === 'roundtrip' ? document.getElementById('t-return').value : 'N/A',
+        'Passengers':             pax,
+        'Name':                   document.getElementById('t-name').value,
+        'Email':                  document.getElementById('t-email').value,
+        'Phone':                  document.getElementById('t-phone').value,
+        '_subject':               `Transfer Booking — ${document.getElementById('t-name').value} (${pax} pax)`,
+      },
+      amount: total,
+      summary: `
+        <strong>${tripType === 'oneway' ? 'Solo Ida' : 'Ida y Vuelta'} Transfer</strong><br>
+        ${document.getElementById('t-pickup').value} → ${document.getElementById('t-dropoff').value}<br>
+        Departure: ${document.getElementById('t-date').value}${tripType === 'roundtrip' ? ' · Return: ' + document.getElementById('t-return').value : ''}<br>
+        ${pax} passenger${pax > 1 ? 's' : ''}
+        <div class="adt-order-total"><span>Total</span><span>$${total.toFixed(2)}</span></div>
+      `,
+    };
+  }
+
+  if (type === 'tours') {
+    const tour       = TOURS.find(t => t.id === selectedTour);
+    const pax        = parseInt(document.getElementById('tour-pax').textContent);
+    const total      = tour && tour.price > 0 ? tour.price * pax : 0;
+    const pickupIdx  = parseInt(document.getElementById('tour-pickup').value);
+    const pickup     = tour && !isNaN(pickupIdx) ? tour.pickups[pickupIdx] : null;
+    const pickupLabel = pickup
+      ? (pickup.time ? `${pickup.label} (${pickup.time})` : pickup.label)
+      : '';
+    return {
+      data: {
+        'Tour':          tour ? tour.name : 'No seleccionado',
+        'Pickup Point':  pickupLabel,
+        'Drop-off':      tour ? tour.dropoff : '',
+        'Travel Date':   document.getElementById('tour-date').value,
+        'Passengers':    pax,
+        'Total Price':   total > 0 ? `$${total.toFixed(2)}` : 'Por confirmar',
+        'Name':          document.getElementById('tour-name').value,
+        'Email':         document.getElementById('tour-email').value,
+        '_subject':      `Tour Booking — ${tour ? tour.name : ''} on ${document.getElementById('tour-date').value}`,
+      },
+      amount: total,
+      summary: `
+        <strong>${tour ? tour.name : ''}</strong><br>
+        Pickup: ${pickupLabel}<br>
+        Drop-off: ${tour ? tour.dropoff : ''}<br>
+        Date: ${document.getElementById('tour-date').value}<br>
+        ${pax} passenger${pax > 1 ? 's' : ''}${total > 0 ? ` × $${tour.price.toFixed(2)}` : ''}
+        ${total > 0 ? `<div class="adt-order-total"><span>Total</span><span>$${total.toFixed(2)}</span></div>` : ''}
+      `,
+    };
+  }
+
+  return null;
+}
+
+// ─────────────────────────────────────────────
+// Submission
+// ─────────────────────────────────────────────
+
+function submitForm(type) {
+  if (type === 'charters') {
+    if (!validateCharters()) return;
+    submitCharter();
+    return;
+  }
+
+  if (type === 'transfers' && !validateTransfers()) return;
+  if (type === 'tours'     && !validateTours())     return;
+
+  const result = collectData(type);
+  if (!result) return;
+
+  pendingType   = type;
+  pendingData   = result.data;
+  pendingAmount = result.amount;
+
+  document.getElementById('modal-order-summary').innerHTML = result.summary;
+  document.getElementById('payment-modal').classList.add('open');
+  const payBtn = document.getElementById('modal-pay-btn');
+  payBtn.disabled = false;
+  payBtn.innerHTML = '<span>Continue to Payment</span> <span>→</span>';
+}
+
+function closePaymentModal() {
+  document.getElementById('payment-modal').classList.remove('open');
+}
+
+// Records the booking in Formspree first, then redirects to Square.
+// Doing it in this order means the submission is captured even if
+// the customer closes the browser on the Square checkout page.
+async function processPayment() {
+  const btn = document.getElementById('modal-pay-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="adt-spinner"></div> <span>Redirecting to Square…</span>';
+
+  await sendToFormspree(pendingType, pendingData);
+
+  let squareUrl = null;
+  if (pendingType === 'transfers') {
+    squareUrl = SQUARE_LINKS.transfers;
+  } else if (pendingType === 'tours') {
+    squareUrl = SQUARE_LINKS.tours[selectedTour] || null;
+  }
+
+  if (!squareUrl || squareUrl.includes('YOUR_')) {
+    // Links not configured — skip redirect and show success (useful for testing)
+    closePaymentModal();
+    showSuccess(pendingType, pendingData);
+    return;
+  }
+
+  window.location.href = squareUrl;
+}
+
+async function sendToFormspree(type, data) {
+  try {
+    await fetch(FORMSPREE[type], {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data),
+    });
+  } catch (e) {
+    // Non-fatal — the payment redirect still proceeds
+    console.warn('Formspree notification failed:', e);
+  }
+}
+
+async function submitCharter() {
+  const btn = document.getElementById('c-submit');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="adt-spinner"></div> <span>Sending…</span>';
+
+  const data = {
+    'Trip Type':              charterType === 'oneway' ? 'Solo Ida' : charterType === 'roundtrip' ? 'Ida y Vuelta' : 'Múltiples Paradas',
+    'Organization':           document.getElementById('c-org').value,
+    'Total Passengers':       document.getElementById('c-pax').value,
+    'Buses Needed':           document.getElementById('c-buses').value,
+    'Pickup':                 document.getElementById('c-pickup').value,
+    'Destination':            document.getElementById('c-dropoff').value,
+    'Exact Drop-off Address': document.getElementById('c-dropoff-exact').value,
+    'Departure Date':         document.getElementById('c-date').value,
+    'Return Date':            charterType !== 'oneway' ? document.getElementById('c-return').value : 'N/A',
+    'Notes':                  document.getElementById('c-notes').value,
+    'Contact Name':           document.getElementById('c-name').value,
+    'Email':                  document.getElementById('c-email').value,
+    'Phone':                  document.getElementById('c-phone').value,
+    '_subject':               `Charter Request — ${document.getElementById('c-org').value} (${document.getElementById('c-pax').value} pax)`,
+  };
+
+  try {
+    const res = await fetch(FORMSPREE['charters'], {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (res.ok) {
+      showSuccess('charters', data);
+    } else {
+      throw new Error();
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Try Again</span> <span>→</span>';
+    alert('Something went wrong. Please try again or contact us directly.');
+  }
+}
+
+// ─────────────────────────────────────────────
+// Success / reset
+// ─────────────────────────────────────────────
+
+function showSuccess(type, data) {
+  document.getElementById(type + '-form').classList.add('hidden');
+  document.getElementById(type + '-success').classList.remove('hidden');
+
+  const msgs = {
+    transfers: `¡Pago confirmado! Tu ${data['Trip Type']} traslado para ${data['Passengers']} pasajero(s) ha sido reservado.<br>Se ha enviado una confirmación a <strong>${data['Email']}</strong>.`,
+    tours:     `¡Pago confirmado! Tienes reservado <strong>${data['Tour']}</strong> on ${data['Travel Date']}.<br>Confirmación enviada a <strong>${data['Email']}</strong>.`,
+    charters:  `Gracias, ${data['Contact Name']}! Nuestro equipo revisará tu solicitud para <strong>${data['Organization']}</strong> y enviará una cotización personalizada a <strong>${data['Email']}</strong> en 24 horas. El pago se realizará una vez que tu cotización sea confirmada.`,
+  };
+
+  document.getElementById(type + '-success-msg').innerHTML = msgs[type];
+}
+
+function resetForm(type) {
+  document.getElementById(type + '-form').classList.remove('hidden');
+  document.getElementById(type + '-success').classList.add('hidden');
+
+  if (type === 'tours') {
+    document.getElementById('tour-details').classList.add('hidden');
+    selectedTour = null;
+    document.querySelectorAll('.adt-tour-card').forEach(c => c.classList.remove('selected'));
+  }
+
+  const btnId = type === 'transfers' ? 't-submit' : type === 'tours' ? 'tour-submit' : 'c-submit';
+  const labels = {
+    transfers: 'Reservar Traslado',
+    tours:     'Reservar Tour',
+    charters:  'Enviar Solicitud de Charter',
+  };
+  const btn = document.getElementById(btnId);
+  btn.disabled = false;
+  btn.innerHTML = `<span>${labels[type]}</span><span>→</span>`;
+}
+
+// ─────────────────────────────────────────────
+// Init
+// ─────────────────────────────────────────────
+
+renderTourCards();
+initLocationDropdowns();
+
+const today = new Date().toISOString().split('T')[0];
+document.querySelectorAll('input[type="date"]').forEach(d => d.min = today);
+
+attachLiveValidation();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AllDayTours — Book a Trip</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="booking.css" />
+</head>
+<body>
+<div class="adt-wrap">
+
+  <!-- Trip type selector -->
+  <div class="adt-type-tabs">
+    <button class="adt-type-tab active" data-type="transfers" onclick="switchType('transfers')">Transfers</button>
+    <button class="adt-type-tab"        data-type="tours"     onclick="switchType('tours')">Tours</button>
+    <button class="adt-type-tab"        data-type="charters"  onclick="switchType('charters')">Charters</button>
+  </div>
+
+  <!-- ─────────────────────────────────────────
+       Transfers
+  ───────────────────────────────────────────── -->
+  <div id="panel-transfers" class="adt-card">
+    <div class="adt-card-header">
+      <div>
+        <h2>Transfer Booking</h2>
+        <p>Point-to-point bus transfers, one-way or round trip</p>
+      </div>
+    </div>
+    <div class="adt-card-body">
+
+      <div id="transfers-success" class="adt-success hidden">
+        <div class="adt-success-circle">✅</div>
+        <div class="adt-success-title">Transfer Booked!</div>
+        <div class="adt-success-text" id="transfers-success-msg"></div>
+        <button class="adt-success-back" onclick="resetForm('transfers')">← Book Another</button>
+      </div>
+
+      <div id="transfers-form">
+        <div class="adt-toggle">
+          <button class="adt-toggle-btn active" id="tt-oneway"    onclick="setTripType('oneway')">One Way</button>
+          <button class="adt-toggle-btn"        id="tt-roundtrip" onclick="setTripType('roundtrip')">Round Trip</button>
+        </div>
+
+        <div class="adt-searchbar">
+          <div class="sb-cell" id="sb-t-pickup">
+            <span class="sb-label">From</span>
+            <select id="t-pickup" onchange="updateDropoffOptions()"></select>
+            <span class="sb-cell-error" id="err-t-pickup">Required</span>
+          </div>
+          <div class="sb-cell" id="sb-t-dropoff">
+            <span class="sb-label">To</span>
+            <select id="t-dropoff" onchange="updatePickupOptions()"></select>
+            <span class="sb-cell-error" id="err-t-dropoff">Required</span>
+          </div>
+          <div class="sb-cell" id="sb-t-date">
+            <span class="sb-label">Depart</span>
+            <input type="date" id="t-date" />
+            <span class="sb-cell-error" id="err-t-date">Required</span>
+          </div>
+        </div>
+
+        <div class="adt-field">
+          <label class="adt-label">Exact Drop-off Address</label>
+          <input type="text" id="t-dropoff-exact" class="adt-input" placeholder="Street address, unit, landmark…" />
+          <div class="adt-field-error" id="err-t-dropoff-exact">Please enter the exact drop-off address</div>
+          <div class="adt-hint">Enter the precise drop-off address so your driver is prepared.</div>
+        </div>
+
+        <div id="t-return-wrap" class="adt-field hidden">
+          <label class="adt-label">Return Date</label>
+          <input type="date" id="t-return" class="adt-input" />
+          <div class="adt-field-error" id="err-t-return">Please select a return date</div>
+        </div>
+
+        <div class="adt-field">
+          <label class="adt-label">Number of Passengers</label>
+          <div class="adt-counter">
+            <button class="adt-counter-btn" onclick="adjustCount('t-pax', -1)">−</button>
+            <div class="adt-counter-val" id="t-pax">1</div>
+            <button class="adt-counter-btn" onclick="adjustCount('t-pax', 1, 55)">+</button>
+          </div>
+          <div class="adt-hint">Max 55 per bus. Need more? Use Charter booking.</div>
+        </div>
+
+        <div class="adt-divider"></div>
+        <div class="adt-section-label">Contact Details</div>
+
+        <div class="adt-grid-2">
+          <div class="adt-field">
+            <label class="adt-label">Full Name</label>
+            <input type="text" id="t-name" class="adt-input" placeholder="Your full name" />
+            <div class="adt-field-error" id="err-t-name">Please enter your name</div>
+          </div>
+          <div class="adt-field">
+            <label class="adt-label">Phone Number</label>
+            <input type="tel" id="t-phone" class="adt-input" placeholder="+1 (000) 000-0000" />
+            <div class="adt-field-error" id="err-t-phone">Please enter a valid US/international phone number</div>
+          </div>
+        </div>
+        <div class="adt-field">
+          <label class="adt-label">Email Address</label>
+          <input type="email" id="t-email" class="adt-input" placeholder="your@email.com" />
+          <div class="adt-field-error" id="err-t-email">Please enter a valid email address</div>
+        </div>
+
+        <button class="adt-submit" id="t-submit" onclick="submitForm('transfers')">
+          <span>Book Transfer</span> <span>→</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────
+       Tours
+  ───────────────────────────────────────────── -->
+  <div id="panel-tours" class="adt-card hidden">
+    <div class="adt-card-header">
+      <div>
+        <h2>Tour Booking</h2>
+        <p>Join a guided group tour — pick your date and seats</p>
+      </div>
+    </div>
+    <div class="adt-card-body">
+
+      <div id="tours-success" class="adt-success hidden">
+        <div class="adt-success-circle">✅</div>
+        <div class="adt-success-title">Tour Reserved!</div>
+        <div class="adt-success-text" id="tours-success-msg"></div>
+        <button class="adt-success-back" onclick="resetForm('tours')">← Book Another</button>
+      </div>
+
+      <div id="tours-form">
+        <div class="adt-section-label">Choose a Tour</div>
+
+        <div class="adt-tour-error" id="err-tour-select">Please select a tour before continuing</div>
+        <div class="adt-tour-grid" id="tour-cards">
+          <!-- populated by renderTourCards() -->
+        </div>
+
+        <!-- shown once a tour is selected -->
+        <div id="tour-details" class="hidden">
+
+          <div class="adt-searchbar" style="grid-template-columns:1fr 1fr 1fr; margin-bottom:0;">
+            <div class="sb-cell" id="sb-tour-pickup">
+              <span class="sb-label">Pickup Point</span>
+              <select id="tour-pickup" onchange="updateTourPickupTime()"></select>
+              <span class="sb-cell-error" id="err-tour-pickup">Required</span>
+            </div>
+            <div class="sb-cell" id="sb-tour-date">
+              <span class="sb-label">Travel Date</span>
+              <input type="date" id="tour-date" />
+              <span class="sb-cell-error" id="err-tour-date">Required</span>
+            </div>
+            <div class="sb-cell" style="flex-direction:row;align-items:center;justify-content:space-between">
+              <div>
+                <div class="sb-label">Passengers</div>
+                <div class="adt-counter" style="margin-top:2px">
+                  <button class="adt-counter-btn" style="height:34px" onclick="adjustCount('tour-pax', -1)">−</button>
+                  <div class="adt-counter-val" id="tour-pax" style="height:34px;line-height:34px;min-width:44px">1</div>
+                  <button class="adt-counter-btn" style="height:34px" onclick="adjustCount('tour-pax', 1, 55)">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- pickup time / drop-off / availability info bar -->
+          <div id="tour-info-bar" style="background:var(--gray-50);border:1px solid var(--gray-200);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:12px 18px;font-size:13px;color:var(--gray-500);font-weight:600;display:flex;gap:24px;flex-wrap:wrap;margin-bottom:20px;">
+            <span id="tour-info-pickup-time"></span>
+            <span id="tour-info-dropoff"></span>
+            <span id="tour-info-avail"></span>
+          </div>
+
+          <div id="tour-price-summary" class="adt-price-summary hidden">
+            <div class="adt-price-summary-label" id="tour-price-label">Estimated Total</div>
+            <div class="adt-price-summary-value" id="tour-price-val">$0.00</div>
+          </div>
+
+          <div class="adt-divider"></div>
+          <div class="adt-section-label">Your Details</div>
+
+          <div class="adt-grid-2">
+            <div class="adt-field">
+              <label class="adt-label">Full Name</label>
+              <input type="text" id="tour-name" class="adt-input" placeholder="Your full name" />
+              <div class="adt-field-error" id="err-tour-name">Please enter your name</div>
+            </div>
+            <div class="adt-field">
+              <label class="adt-label">Email Address</label>
+              <input type="email" id="tour-email" class="adt-input" placeholder="your@email.com" />
+              <div class="adt-field-error" id="err-tour-email">Please enter a valid email address</div>
+            </div>
+          </div>
+
+          <button class="adt-submit" id="tour-submit" onclick="submitForm('tours')">
+            <span>Reserve Tour</span> <span>→</span>
+          </button>
+
+        </div><!-- /tour-details -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────
+       Charters
+  ───────────────────────────────────────────── -->
+  <div id="panel-charters" class="adt-card hidden">
+    <div class="adt-card-header">
+      <div>
+        <h2>Charter Request</h2>
+        <p>Large group travel — get a custom quote within 24 hours</p>
+      </div>
+    </div>
+    <div class="adt-card-body">
+
+      <div id="charters-success" class="adt-success hidden">
+        <div class="adt-success-circle">✅</div>
+        <div class="adt-success-title">Request Received!</div>
+        <div class="adt-success-text" id="charters-success-msg"></div>
+        <button class="adt-success-back" onclick="resetForm('charters')">← Submit Another</button>
+      </div>
+
+      <div id="charters-form">
+        <div class="adt-toggle" style="margin-bottom:20px">
+          <button class="adt-toggle-btn active" id="ct-oneway"    onclick="setCharterType('oneway')">One Way</button>
+          <button class="adt-toggle-btn"        id="ct-roundtrip" onclick="setCharterType('roundtrip')">Round Trip</button>
+          <button class="adt-toggle-btn"        id="ct-multistop" onclick="setCharterType('multistop')">Multi-Stop</button>
+        </div>
+
+        <div class="adt-section-label">Group &amp; Trip Details</div>
+
+        <div class="adt-grid-2">
+          <div class="adt-field" style="grid-column:1/-1">
+            <label class="adt-label">Organization / Group Name</label>
+            <input type="text" id="c-org" class="adt-input" placeholder="Company, school, club…" />
+            <div class="adt-field-error" id="err-c-org">Please enter your organization name</div>
+          </div>
+          <div class="adt-field">
+            <label class="adt-label">Total Passengers</label>
+            <input type="number" id="c-pax" class="adt-input" min="1" placeholder="e.g. 120" />
+            <div class="adt-field-error" id="err-c-pax">Please enter the number of passengers</div>
+          </div>
+          <div class="adt-field">
+            <label class="adt-label">Buses Needed</label>
+            <input type="number" id="c-buses" class="adt-input" min="1" placeholder="e.g. 3" />
+            <div class="adt-field-error" id="err-c-buses">Please enter the number of buses needed</div>
+          </div>
+        </div>
+
+        <div class="adt-searchbar" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:16px">
+          <div class="sb-cell" id="sb-c-pickup">
+            <span class="sb-label">From</span>
+            <input type="text" id="c-pickup" placeholder="Pickup location…" />
+            <span class="sb-cell-error" id="err-c-pickup">Required</span>
+          </div>
+          <div class="sb-cell" id="sb-c-dropoff">
+            <span class="sb-label">To</span>
+            <input type="text" id="c-dropoff" placeholder="Destination…" />
+            <span class="sb-cell-error" id="err-c-dropoff">Required</span>
+          </div>
+          <div class="sb-cell" id="sb-c-date">
+            <span class="sb-label">Depart Date</span>
+            <input type="date" id="c-date" />
+            <span class="sb-cell-error" id="err-c-date">Required</span>
+          </div>
+        </div>
+
+        <div class="adt-field">
+          <label class="adt-label">Exact Drop-off Address</label>
+          <input type="text" id="c-dropoff-exact" class="adt-input" placeholder="Street address, unit, landmark…" />
+          <div class="adt-field-error" id="err-c-dropoff-exact">Please enter the exact drop-off address</div>
+          <div class="adt-hint">Enter the precise drop-off address for your group.</div>
+        </div>
+
+        <div id="c-return-wrap" class="adt-field hidden">
+          <label class="adt-label">Return / End Date</label>
+          <input type="date" id="c-return" class="adt-input" />
+          <div class="adt-field-error" id="err-c-return">Please select a return/end date</div>
+        </div>
+
+        <div class="adt-field">
+          <label class="adt-label">Additional Notes or Requirements</label>
+          <textarea id="c-notes" class="adt-input adt-textarea" placeholder="Accessibility needs, preferred departure times, stops, special accommodations…"></textarea>
+          <div class="adt-field-error" id="err-c-notes">Please provide any relevant notes or requirements</div>
+        </div>
+
+        <div class="adt-divider"></div>
+        <div class="adt-section-label">Primary Contact</div>
+
+        <div class="adt-grid-3">
+          <div class="adt-field">
+            <label class="adt-label">Full Name</label>
+            <input type="text" id="c-name" class="adt-input" placeholder="Contact person" />
+            <div class="adt-field-error" id="err-c-name">Please enter a contact name</div>
+          </div>
+          <div class="adt-field">
+            <label class="adt-label">Email</label>
+            <input type="email" id="c-email" class="adt-input" placeholder="your@email.com" />
+            <div class="adt-field-error" id="err-c-email">Please enter a valid email address</div>
+          </div>
+          <div class="adt-field">
+            <label class="adt-label">Phone</label>
+            <input type="tel" id="c-phone" class="adt-input" placeholder="+1 (000) 000-0000" />
+            <div class="adt-field-error" id="err-c-phone">Please enter a valid US/international phone number</div>
+          </div>
+        </div>
+
+        <div class="adt-badge adt-badge-orange" style="margin-bottom:16px;font-size:12px">
+          Our team will respond with a custom quote within 24 hours
+        </div>
+
+        <button class="adt-submit" id="c-submit" onclick="submitForm('charters')">
+          <span>Submit Charter Request</span> <span>→</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────
+       Square payment modal
+  ───────────────────────────────────────────── -->
+  <div class="adt-modal-overlay" id="payment-modal">
+    <div class="adt-modal">
+      <div class="adt-modal-header">
+        <h3>Review &amp; Pay</h3>
+        <button class="adt-modal-close" onclick="closePaymentModal()">✕</button>
+      </div>
+      <div class="adt-modal-body">
+        <div class="adt-order-summary" id="modal-order-summary"></div>
+        <div class="adt-modal-divider"></div>
+        <p style="font-size:13px;color:var(--gray-600);font-weight:500;margin-bottom:16px;line-height:1.6;">
+          Your booking details have been saved. Click below to complete your payment
+          securely through Square. You will be redirected to a Square-hosted checkout
+          page and brought back when complete.
+        </p>
+        <button class="adt-submit" id="modal-pay-btn" onclick="processPayment()">
+          <span>Continue to Payment</span> <span>→</span>
+        </button>
+        <div class="adt-square-note">
+          Payments processed securely by Square. You will be redirected to Square to complete checkout.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /adt-wrap -->
+
+<script src="booking.js"></script>
+</body>
+</html>
